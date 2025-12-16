@@ -48,5 +48,43 @@ Follow these steps to set up the project locally on your machine.
 
 1. **Clone the repository**
    ```bash
-   git clone [https://github.com/your-username/sandhu-cricket-web.git](https://github.com/your-username/sandhu-cricket-web.git)
+   git clone https://github.com/your-username/sandhu-cricket-web.git
    cd sandhu-cricket-web
+   ```
+
+2. **Install dependencies**
+   ```bash
+    npm install
+    # or
+    yarn install
+   ```
+
+3. **Start Scoring**
+   ```bash
+    npm run dev
+    # or
+    yarn dev
+   ```
+
+
+
+```bash
+
+src/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx  
+│   ├── globals.css
+│   └── match/
+│       └── page.tsx
+├── components/
+│   ├── Keypad.tsx
+│   ├── Scoreboard.tsx
+│   ├── Timeline.tsx
+│   ├── ThemeProvider.tsx
+│   └── ThemeToggle.tsx
+├── hooks/
+│   └── useScoring.ts
+└── types/
+    └── index.ts
+```
