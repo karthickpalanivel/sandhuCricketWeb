@@ -1,19 +1,38 @@
 import { useState } from "react";
-import { ArrowLeft, RotateCcw, RotateCw, X } from "lucide-react";
+import { RotateCcw, RotateCw, X } from "lucide-react";
 
 interface Props {
-  onScore: (type: 'legal' | 'wide' | 'no-ball' | 'wicket', runs: number) => void;
+  onScore: (type: 'legal' | 'wide' | 'no-ball' | 'wicket', runs: number, isWicket?: boolean) => void;
   onUndo: () => void;
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  isDisabled?: boolean; // New prop to lock keypad when over limit reached
 }
 
-export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Props) {
-  // Local state to handle the "Extra" sub-menu
+export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo, isDisabled = false }: Props) {
   const [pendingExtra, setPendingExtra] = useState<'wide' | 'no-ball' | null>(null);
+  const [isExtraWicket, setIsExtraWicket] = useState(false); // Checkbox state
 
-  // 1. STANDARD VIEW
+  // If match is over/limit reached, show only Undo/Redo (or nothing for scoring)
+  if (isDisabled) {
+    return (
+        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-2xl text-center space-y-4">
+            <p className="text-gray-500 font-bold">Innings Limit Reached</p>
+            <div className="flex gap-3 justify-center">
+                <button 
+                    onClick={onUndo} 
+                    disabled={!canUndo}
+                    className="px-6 py-3 bg-white dark:bg-gray-700 rounded-xl font-bold shadow-sm flex items-center gap-2"
+                >
+                    <RotateCcw size={16} /> Undo
+                </button>
+            </div>
+        </div>
+    );
+  }
+
+  // 1. STANDARD KEYPAD
   if (!pendingExtra) {
     return (
       <div className="space-y-3">
@@ -35,7 +54,7 @@ export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Pr
           </button>
         </div>
 
-        {/* Main Grid */}
+        {/* Scoring Grid */}
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3, 4, 6, 0].map((runs) => (
             <button
@@ -51,15 +70,14 @@ export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Pr
             </button>
           ))}
 
-          {/* Special Keys */}
           <button 
-            onClick={() => setPendingExtra('wide')}
+            onClick={() => { setPendingExtra('wide'); setIsExtraWicket(false); }}
             className="h-16 text-lg font-bold bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100 rounded-xl active:scale-95"
           >
             WD
           </button>
           <button 
-            onClick={() => setPendingExtra('no-ball')}
+            onClick={() => { setPendingExtra('no-ball'); setIsExtraWicket(false); }}
             className="h-16 text-lg font-bold bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100 rounded-xl active:scale-95"
           >
             NB
@@ -75,9 +93,9 @@ export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Pr
     );
   }
 
-  // 2. EXTRA DETAILS VIEW (Modal-like)
+  // 2. EXTRA DETAILS MODAL
   return (
-    <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl animate-in fade-in slide-in-from-bottom-4">
+    <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-2xl animate-in fade-in slide-in-from-bottom-4">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
           {pendingExtra === 'wide' ? 'Wide Ball' : 'No Ball'} 
@@ -88,17 +106,30 @@ export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Pr
         </button>
       </div>
       
-      <p className="text-sm text-gray-500 mb-3">Did they run any extra runs?</p>
+      {/* WICKET TOGGLE */}
+      <div 
+        onClick={() => setIsExtraWicket(!isExtraWicket)}
+        className={`flex items-center justify-between p-3 rounded-xl mb-4 cursor-pointer transition-colors ${isExtraWicket ? 'bg-red-100 border-red-200 dark:bg-red-900/30' : 'bg-white dark:bg-gray-700'}`}
+      >
+        <span className={`font-bold ${isExtraWicket ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}`}>
+            Wicket Fell? (Run Out / Stumping)
+        </span>
+        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isExtraWicket ? 'bg-red-500 border-red-500' : 'border-gray-400'}`}>
+            {isExtraWicket && <div className="w-2 h-2 bg-white rounded-full" />}
+        </div>
+      </div>
+
+      <p className="text-sm text-gray-500 mb-2 font-semibold">Runs scored while running:</p>
       
       <div className="grid grid-cols-4 gap-2">
         {[0, 1, 2, 3, 4, 6].map((runs) => (
           <button
             key={runs}
             onClick={() => {
-              onScore(pendingExtra, runs); // Pass the extra type + runs ran
-              setPendingExtra(null);     // Close modal
+              onScore(pendingExtra, runs, isExtraWicket); // Pass runs + wicket flag
+              setPendingExtra(null);
             }}
-            className="py-3 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm active:scale-95"
+            className="py-3 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm active:scale-95 border border-gray-100 dark:border-gray-600"
           >
             +{runs}
           </button>
@@ -106,7 +137,7 @@ export default function Keypad({ onScore, onUndo, onRedo, canUndo, canRedo }: Pr
       </div>
       <button 
         onClick={() => setPendingExtra(null)}
-        className="w-full mt-4 py-3 text-gray-500 font-bold"
+        className="w-full mt-4 py-3 text-gray-500 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg"
       >
         Cancel
       </button>
