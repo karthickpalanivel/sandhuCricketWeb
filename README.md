@@ -5,7 +5,56 @@ A professional street cricket scorer application built with **Next.js**, ported 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## ✨ Features
+## 🚀 Why This Scorer is Different?
+
+Most cricket apps assume you are playing a professional match with 11 players and standard rules. Sandhu Cricket assumes you are playing in a parking lot, a park, or a street where rules change, arguments happen, and teams can be any size.
+
+### 1. ♾️ Unlimited Player Flexibility
+* **No Hard 11-Player Cap:** Street teams rarely have exactly 11 players. Whether you are playing **3 vs 3** or **15 vs 15**, the app handles it.
+* **"Last Man Standing" Ready:** The scoring engine doesn't force an "All Out" status automatically unless you say so. You can keep playing until the very last run is chased.
+
+### 2. 🧠 Advanced "Extras" Logic
+Standard apps struggle when multiple things happen at once. We handle the complex math automatically:
+* **Wide + Runs:** If the batsman runs 2 on a Wide ball, just click `WD` -> `+2`. The app calculates: **1 Wide Extra + 2 Runs = 3 Total Runs**.
+* **No Ball + Wicket:** Did a player get Run Out on a No Ball? The app correctly records the runs, adds the extra, counts the wicket, but *doesn't* count the ball as legal.
+* **Run Out + Runs:** If a batsman completes a run but gets out attempting the second, you can record **"1 Run + Wicket"**.
+
+### 3. 🕹️ Total Manual Override (The "Innings" Logic)
+* **No Auto-Kill:** In many apps, once the overs are done, the innings closes instantly. In street cricket, the bowling team might have to bowl an extra ball due to a dispute.
+* **You Are in Control:** The innings **never ends automatically**. Even if the overs are finished, the app waits for *you* to click "End Innings". This allows for last-minute corrections or "one more ball" scenarios.
+
+### 4. ↩️ The "Argument Solver" (Undo & Redo)
+* **Full History Stack:** Arguments are part of street cricket. "Was that last ball a wide?" "No, it touched the bat!"
+* **Instant Revert:** Use the **Undo** button to revert the entire state (score, balls, wickets, extras history) instantly.
+* **Redo:** If you realize you were right the first time, hit **Redo**.
+
+### 5. 📉 Smart Calculations
+* **Dynamic Target:** As soon as the 1st innings ends, the app automatically calculates the target and switches to "Chase Mode".
+* **Required Run Rate (RRR):** In the 2nd innings, see exactly how many runs are needed per over to win.
+* **Projected Scores:** See the Current Run Rate (CRR) updates ball-by-ball.
+
+### 6. 🛡️ "Pocket-Safe" Read-Only Mode
+* **Lock Previous Data:** Want to check the 1st innings score while batting in the 2nd? You can switch tabs to view the old scorecard in **Read-Only Mode**.
+* **Safety Lock:** Prevents you from accidentally adding runs to the wrong team while checking stats.
+
+### 7. 🎨 The "Vibe Check" UI
+* **Dark Mode:** Perfect for night matches under floodlights (or streetlights).
+* **Visual Timeline:** A horizontal ticker showing exactly what happened on every ball of the over (e.g., `1`, `WD+2`, `W`, `6`, `|`).
+* **Haptic Feel:** Big, bold buttons designed for quick tapping without looking down constantly.
+
+---
+
+## ⚙️ Logic breakdown
+
+| Scenario | Standard App Behavior | Sandhu Cricket Behavior |
+| :--- | :--- | :--- |
+| **Wide Ball Rule** | Always counts as Extra Ball | **Configurable:** Choose if Wide = Re-ball OR Run-only. |
+| **Overs Finish** | Auto-closes innings | **Waits for User:** Allows adjustments before closing. |
+| **Wicket on Extra** | Often confusing/Impossible | **Easy Toggle:** "Wicket Fell?" checkbox inside Extras menu. |
+| **Team Size** | Fixed at 11 | **Flexible:** Tracks wickets purely as a count, not fixed to player slots. |
+| **Data Loss** | Lost on refresh | **Persistent:** Auto-saves to Local Storage after every ball. |
+
+---
 
 ### 🎮 Gameplay & Scoring
 - **Flexible Rules:** Configure match overs (1-20) and custom rules for Wides and No-Balls (Re-ball vs. Run only).
@@ -24,18 +73,6 @@ A professional street cricket scorer application built with **Next.js**, ported 
 - **Auto-Conclusion:** Detects when overs are finished or a target is chased.
 - **Innings Management:** Handles the transition between 1st and 2nd innings with a summary view.
 
----
-
-## 🛠 Tech Stack
-
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **State Management:** React Hooks (`useState`, `useReducer` pattern) + Local Storage
-
----
-
 ## 🚀 Getting Started
 
 Follow these steps to set up the project locally on your machine.
@@ -45,6 +82,8 @@ Follow these steps to set up the project locally on your machine.
 - npm or yarn
 
 ### Installation
+
+## 📱 Made for the Streets. Built with Code.
 
 1. **Clone the repository**
    ```bash
